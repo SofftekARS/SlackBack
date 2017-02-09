@@ -12,6 +12,21 @@ function init(router) {
         .get(getUrl);
     router.route('/slack/:id')
         .get(getById);
+    router.route('/slack/:id/channel')
+        .post(createChannel);
+}
+
+let createChannel = (req, res) => {
+    Slack.findById(req.params.id, function(err, slack) {
+        if (slack.channel == '') {
+            SlackConnector.createChannel(slack, (err, channel) => {
+                slack.channel = channel.name;
+                slack.save(function(err, slack) {
+                    SlackConnector.setListeners(slack);
+                });
+            });
+        }
+    });
 }
 
 let getById = function(req, res) {
@@ -59,7 +74,6 @@ function saveSlack(slack, userId, res) {
                 user.save((err, user) => {
                     ResponseHelper.write(res, user, err, ResponseHelper.create);
                 });
-                SlackConnector.setListeners(new_slack);
             });
         } else {
             console.error(err);
