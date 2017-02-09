@@ -15,7 +15,6 @@ let slacks = [];
 let start = () => {
     // busco los slacks y los guardo en memoria
     Slack.find({}).exec((err, slacksDB) => {
-        console.log("inicializizo " + slacksDB.length + " slacks");
         slacksDB.forEach((slack) => {
             setListeners(slack);
         });
@@ -28,7 +27,7 @@ let start = () => {
 let setListeners = (slack) => {
     //agrego el slack al pool de slacks
     slacks.push(slack);
-    console.log("agrego 1 slack: " + slacks.length);
+    console.log("agrego 1 slack: " + slacks.length + ", " + slack.teamName + " / " + slack.channel);
     //busco el bot correspontiente a ese slack
     let bot = getBot(slack);
     bot.on('message', (event) => {
